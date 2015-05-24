@@ -194,6 +194,7 @@
 					'height: ' + cropperH + 'px',
 					'top: ' + this.cropper.y + 'px',
 					'left: ' + this.cropper.x + 'px',
+					'cursor: move',
 					'overflow: hidden'
 				];
 				
@@ -207,17 +208,56 @@
 					'height: ' + this.visibleSize.h + 'px',
 					'top: -' + this.cropper.y + 'px',
 					'left: -' + this.cropper.x + 'px',
+					'cursor: move',
+					'pointer-events: none',
 					'max-width: none'
 				];
 				
-				cropperImage.style.cssText = cropperImageStyle.join('; ');
+				this.cropperImage = cropperImage;
 				
-				cropper.appendChild(cropperImage);
-				this.cropperWrapper.appendChild(cropper);
+				this.cropperImage.style.cssText = cropperImageStyle.join('; ');
+				this.cropperDOM = cropper;
+				
+				this.cropperDOM.appendChild(this.cropperImage);
+				this.cropperWrapper.appendChild(this.cropperDOM);
+				
+				this.cropperDOM.addEventListener('mousedown', this.cropperMouseDown.bind(this));
+				document.addEventListener('mouseup', this.cropperMouseUp.bind(this));
+				document.addEventListener('mousemove', this.cropperMouseMove.bind(this));
 			},
 			
 			resize: function () {
 				this.setImageSize.call(this, this.fullImage, this.build);
+			},
+			
+			cropperMouseDown: function () {
+				var boundingRect = this.cropperWrapper.getBoundingClientRect();
+				
+				this.cropperOffset = boundingRect;
+				this.mouseDown = true;
+			},
+			
+			cropperMouseUp: function () {
+				this.mouseDown = false;
+			},
+			
+			cropperMouseMove: function (e) {
+				if (!this.mouseDown) {
+					return false;
+				}
+				
+				var newX = e.pageX - this.cropperOffset.left,
+				    newY = e.pageY - this.cropperOffset.top;
+				    
+				this.cropper.x = newX;
+				this.cropper.y = newY;
+				
+				this.cropperDOM.style.left = newX + 'px';
+				this.cropperDOM.style.top  = newY + 'px';
+				this.cropperImage.style.left = -newX + 'px';
+				this.cropperImage.style.top  = -newY + 'px';
+				
+				this.buildPreview();
 			}
 			
 		};
