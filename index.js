@@ -172,22 +172,12 @@
 				this.cropperWrapper.appendChild(overlay);
 				
 				/** Create cropper */
-				if (this.settings.size.w > this.settings.size.h) {
-					wRatio   = (this.realSize.w > this.settings.size.w) ? this.settings.size.w / this.realSize.w : this.realSize.w / this.settings.size.w;
-					cropperW = this.settings.size.w * wRatio / this.cropper.z;
-					cropperH = cropperW * this.ratio;
-				} else {
-					hRatio   = (this.realSize.h > this.settings.size.h) ? this.settings.size.h / this.realSize.h : this.realSize.h / this.settings.size.h;
-					cropperH = this.settings.size.h * hRatio / this.cropper.z;
-					cropperW = cropperH * this.ratio;
-				}
-				
 				cropper  = document.createElement('div');
 				cropperStyle = [
 					'position: absolute',
 					'z-index: 2',
-					'width: ' + cropperW + 'px',
-					'height: ' + cropperH + 'px',
+					'width: ' + this.cropper.w + 'px',
+					'height: ' + this.cropper.h + 'px',
 					'top: ' + this.cropper.y + 'px',
 					'left: ' + this.cropper.x + 'px',
 					'cursor: move',
@@ -253,8 +243,13 @@
 					return false;
 				}
 				
-				var newX = this.cropperOffset.x + (e.pageX - this.cropperStartPos.x),
-				    newY = this.cropperOffset.y + (e.pageY - this.cropperStartPos.y);
+				var newX = Math.max(0, this.cropperOffset.x + (e.pageX - this.cropperStartPos.x)),
+				    newY = Math.max(0, this.cropperOffset.y + (e.pageY - this.cropperStartPos.y));
+				    
+				newX = Math.min(this.visibleSize.w - this.cropper.w, newX);
+				newY = Math.min(this.visibleSize.h - this.cropper.h, newY);
+				
+				console.log(this.cropper.w);
 				    
 				this.cropper.x = newX;
 				this.cropper.y = newY;
