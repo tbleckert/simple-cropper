@@ -30,15 +30,22 @@
 				-webkit-transform: translateY(-50%);
 				-moz-transform: translateY(-50%);
 				transform: translate3d(-50%, -50%, 0);
+				background: url('loading.gif') no-repeat center center;
+				padding: 10px;
 			}
 			
 				.demo__split {
 					float: left;
 					width: 50%;
+					opacity: 0;
 				}
 				
 				.demo__preview {
 					background: #eee;
+				}
+				
+				.demo--ready .demo__split {
+					opacity: 1;
 				}
 			
 			img {
@@ -64,16 +71,20 @@
 		<script src="index.js"></script>
 		<script>
 			var cropper = new SimpleCropper('cropper', {
+				cropper: '.demo__cropper',
 				preview: '.demo__preview',
 				position: {
-					x: 10,
-					y: 10	
+					x: 100,
+					y: 100	
 				},
 				size: {
 					w: 496,
 					h: 376
 				},
-				zoom: 1
+				zoom: 1,
+				onReady: function () {
+					this.className += ' demo--ready';
+				}
 			});
 		</script>
 	</body>

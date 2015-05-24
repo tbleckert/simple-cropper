@@ -20,18 +20,20 @@
 				throw new Error('Element could not be found');
 			}
 			
+			this.cropperWrapper = this.element.querySelector(options.cropper);
+			
 			if (options.preview) {
 				this.preview = this.element.querySelector(options.preview);
 			}
 			
 			this.ready   = false;
 			
-			this.build();
+			this.init();
 		};
 		
 		module.prototype = {
 			
-			build: function () {
+			init: function () {
 				var image     = this.element.querySelector('img'),
 				    tempImage, src;
 				
@@ -44,11 +46,11 @@
 				src = image.src;
 				tempImage = new Image();
 				
-				tempImage.onload = this.setImageSize.bind(this, tempImage, this.buildPreview);
+				tempImage.onload = this.setImageSize.bind(this, tempImage, this.build);
 				tempImage.src = src;
 				
 				if (tempImage.complete) {
-					this.setImageSize(tempImage, this.buildPreview);
+					this.setImageSize(tempImage, this.build);
 				}
 			},
 			
@@ -75,12 +77,21 @@
 				this.cropper = {
 					w: this.visibleSize.w * wRatio,
 					h: this.visibleSize.h * hRatio,
-					x: 730,
-					y: 180,
+					x: this.settings.position.x,
+					y: this.settings.position.y,
 					z: this.settings.zoom
 				};
 				
 				callback.call(this);
+			},
+			
+			build: function () {
+				this.buildPreview();
+				this.buildCropper();
+				
+				/** Ready */
+				this.ready = true;
+				this.settings.onReady.call(this.element);
 			},
 			
 			buildPreview: function () {
@@ -111,7 +122,7 @@
 					sh    = Math.min((this.realSize.w - this.cropper.x) * ratio, sh);
 				}
 				    
-				context.drawImage(this.fullImage, this.cropper.x, this.cropper.y, sw, sh, centerX, centerY, dw, dh);
+				context.drawImage(this.fullImage, this.cropper.x / previewW * this.realSize.w, this.cropper.y / previewH * this.realSize.h, sw, sh, centerX, centerY, dw, dh);
 				
 				/** Empty preview */
 				while (this.preview.hasChildNodes()) {
@@ -120,10 +131,71 @@
 				
 				this.preview.appendChild(canvas);
 				
-				/** Ready */
-				this.ready = true;
+				window.onresize = this.resize.bind(this);
+			},
+			
+			buildCropper: function () {
+				var overlay = document.createElement('div'),
+				    overlayStyle = [
+					    'background: rgba(0, 0, 0, 0.8)',
+					    'position: absolute',
+					    'top: 0',
+					    'right: 0',
+					    'bottom: 0',
+					    'left: 0'   
+				    ],
+				    cropperStyle,
+				    cropper,
+				    cropperImage,
+				    cropperImageStyle,
+				    wRatio,
+				    hRatio,
+				    cropperW,
+				    cropperH;
 				
-				window.onresize = this.setImageSize.bind(this, this.fullImage, this.buildPreview);
+				/** Create overlay */
+				overlay.style.cssText = overlayStyle.join('; ');
+				this.cropperWrapper.style.position = 'relative';
+				
+				this.cropperWrapper.appendChild(overlay);
+				
+				/** Create cropper */
+				wRatio   = (this.realSize.w > this.settings.size.w) ? this.settings.size.w / this.realSize.w : this.realSize.w / this.settings.size.w;
+				hRatio   = (this.realSize.h > this.settings.size.h) ? this.settings.size.h / this.realSize.h : this.realSize.h / this.settings.size.h;
+				cropperW = this.settings.size.w * wRatio;
+				cropperH = this.settings.size.h * hRatio;
+				cropper  = document.createElement('div');
+				cropperStyle = [
+					'position: absolute',
+					'z-index: 2',
+					'width: ' + cropperW + 'px',
+					'height: ' + cropperH + 'px',
+					'top: ' + this.cropper.y + 'px',
+					'left: ' + this.cropper.x + 'px',
+					'overflow: hidden'
+				];
+				
+				cropper.style.cssText = cropperStyle.join('; ');
+				
+				/** Create cropper image */
+				cropperImage = this.image.cloneNode();
+				cropperImageStyle = [
+					'position: absolute',
+					'width: ' + this.visibleSize.w + 'px',
+					'height: ' + this.visibleSize.h + 'px',
+					'top: -' + this.cropper.y + 'px',
+					'left: -' + this.cropper.x + 'px',
+					'max-width: none'
+				];
+				
+				cropperImage.style.cssText = cropperImageStyle.join('; ');
+				
+				cropper.appendChild(cropperImage);
+				this.cropperWrapper.appendChild(cropper);
+			},
+			
+			resize: function () {
+				this.setImageSize.call(this, this.fullImage, this.buildPreview);
 			}
 			
 		};
