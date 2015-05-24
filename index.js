@@ -26,7 +26,7 @@
 				this.preview = this.element.querySelector(options.preview);
 			}
 			
-			this.ready   = false;
+			this.ready = false;
 			
 			this.init();
 		};
