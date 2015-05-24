@@ -27,8 +27,8 @@
 				position: absolute;
 				left: 50%;
 				top: 50%;
-				-webkit-transform: translateY(-50%);
-				-moz-transform: translateY(-50%);
+				-webkit-transform: translate3d(-50%, -50%, 0);
+				-moz-transform: translate3d(-50%, -50%, 0);
 				transform: translate3d(-50%, -50%, 0);
 				background: url('loading.gif') no-repeat center center;
 				padding: 10px;
@@ -56,6 +56,20 @@
 			
 			canvas {
 				display: block;
+			}
+			
+			@media (max-width: 600px) {
+				.demo {
+					position: static;
+					-webkit-transform: none;
+					-moz-transform: none;
+					transform: none;
+				}
+				
+				.demo__split {
+					float: none;
+					width: 100%;
+				}
 			}
 		</style>
 	</head>
