@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	
+	<head>
+		<title>Simple Cropper</title>
+		<style>
+			* {
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			
+			html{
+				height: 100%;
+			}
+			
+			body {
+				min-height: 100%;
+				position: relative;
+			}
+			
+			.demo {
+				width: 100%;
+				max-width: 1100px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				-webkit-transform: translateY(-50%);
+				-moz-transform: translateY(-50%);
+				transform: translate3d(-50%, -50%, 0);
+			}
+			
+				.demo__split {
+					float: left;
+					width: 50%;
+				}
+				
+				.demo__preview {
+					background: #eee;
+				}
+			
+			img {
+				max-width: 100%;
+				height: auto;
+				display: block;
+			}
+			
+			canvas {
+				display: block;
+			}
+		</style>
+	</head>
+	
+	<body>
+		<div class="demo" id="cropper">
+			<div class="demo__cropper demo__split">
+				<img src="http://placekitten.com/3000/2500" alt="">
+			</div>
+			<div class="demo__preview demo__split"></div>
+		</div>
+		
+		<script src="index.js"></script>
+		<script>
+			var cropper = new SimpleCropper('cropper', {
+				preview: '.demo__preview',
+				position: {
+					x: 10,
+					y: 10	
+				},
+				size: {
+					w: 496,
+					h: 376
+				},
+				zoom: 1
+			});
+		</script>
+	</body>
+	
+</html>
