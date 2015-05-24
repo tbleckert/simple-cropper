@@ -82,6 +82,8 @@
 					z: this.settings.zoom
 				};
 				
+				this.ratio = (this.settings.size.w > this.settings.size.h) ? this.settings.size.h / this.settings.size.w : this.settings.size.w / this.settings.size.h;
+				
 				callback.call(this);
 			},
 			
@@ -90,8 +92,10 @@
 				this.buildCropper();
 				
 				/** Ready */
-				this.ready = true;
-				this.settings.onReady.call(this.element);
+				if (!this.ready) {
+					this.ready = true;
+					this.settings.onReady.call(this.element);
+				}
 			},
 			
 			buildPreview: function () {
@@ -105,22 +109,27 @@
 				    previewH = this.visibleSize.h,
 				    wRatio   = (previewW > this.settings.size.w) ? this.settings.size.w / previewW : previewW / this.settings.size.w,
 				    hRatio   = (previewH > this.settings.size.h) ? this.settings.size.h / previewH : previewH / this.settings.size.h,
-				    sw       = this.settings.size.w / this.cropper.z,
-				    sh       = this.settings.size.h / this.cropper.z,
-				    dw       = this.settings.size.w * wRatio,
-				    dh       = this.settings.size.h * hRatio,
-				    centerX  = (previewW / 2) - (dw / 2),
-				    centerY  = (previewH / 2) - (dh / 2),
-				    ratio;
+				    sw,
+				    sh,
+				    dw,
+				    dh,
+				    centerX,
+				    centerY;
 				    
 				canvas.width  = previewW;
 				canvas.height = previewH;
 				
 				if (this.settings.size.w > this.settings.size.h) {
-					ratio = this.settings.size.h / this.settings.size.w;
-					sw    = Math.min(this.realSize.w - this.cropper.x, sw);
-					sh    = Math.min((this.realSize.w - this.cropper.x) * ratio, sh);
+					sw    = Math.min(this.realSize.w - this.cropper.x, this.settings.size.w / this.cropper.z);
+					sh    = sw * this.ratio;
+					dw    = this.settings.size.w * wRatio;
+					dh    = dw * this.ratio;
+					
+					console.log(dw, dh);
 				}
+				
+				centerX  = (previewW / 2) - (dw / 2);
+				centerY  = (previewH / 2) - (dh / 2);
 				    
 				context.drawImage(this.fullImage, this.cropper.x / previewW * this.realSize.w, this.cropper.y / previewH * this.realSize.h, sw, sh, centerX, centerY, dw, dh);
 				
@@ -157,13 +166,26 @@
 				overlay.style.cssText = overlayStyle.join('; ');
 				this.cropperWrapper.style.position = 'relative';
 				
+				while (this.cropperWrapper.hasChildNodes()) {
+				    this.cropperWrapper.removeChild(this.cropperWrapper.lastChild);
+				}
+				
+				this.cropperWrapper.appendChild(this.image);
 				this.cropperWrapper.appendChild(overlay);
 				
 				/** Create cropper */
-				wRatio   = (this.realSize.w > this.settings.size.w) ? this.settings.size.w / this.realSize.w : this.realSize.w / this.settings.size.w;
-				hRatio   = (this.realSize.h > this.settings.size.h) ? this.settings.size.h / this.realSize.h : this.realSize.h / this.settings.size.h;
-				cropperW = this.settings.size.w * wRatio;
-				cropperH = this.settings.size.h * hRatio;
+				if (this.settings.size.w > this.settings.size.h) {
+					wRatio   = (this.realSize.w > this.settings.size.w) ? this.settings.size.w / this.realSize.w : this.realSize.w / this.settings.size.w;
+					cropperW = this.settings.size.w * wRatio / this.cropper.z;
+					cropperH = cropperW * this.ratio;
+					
+					console.log(cropperW, cropperH);
+				} else {
+					hRatio   = (this.realSize.h > this.settings.size.h) ? this.settings.size.h / this.realSize.h : this.realSize.h / this.settings.size.h;
+					cropperH = this.settings.size.h * hRatio / this.cropper.z;
+					cropperW = cropperH * this.ratio;
+				}
+				
 				cropper  = document.createElement('div');
 				cropperStyle = [
 					'position: absolute',
@@ -195,7 +217,7 @@
 			},
 			
 			resize: function () {
-				this.setImageSize.call(this, this.fullImage, this.buildPreview);
+				this.setImageSize.call(this, this.fullImage, this.build);
 			}
 			
 		};
