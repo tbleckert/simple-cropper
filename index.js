@@ -248,8 +248,6 @@
 				    
 				newX = Math.min(this.visibleSize.w - this.cropper.w, newX);
 				newY = Math.min(this.visibleSize.h - this.cropper.h, newY);
-				
-				console.log(this.cropper.w);
 				    
 				this.cropper.x = newX;
 				this.cropper.y = newY;
