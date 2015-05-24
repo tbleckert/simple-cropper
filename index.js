@@ -124,8 +124,6 @@
 					sh    = sw * this.ratio;
 					dw    = this.settings.size.w * wRatio;
 					dh    = dw * this.ratio;
-					
-					console.log(dw, dh);
 				}
 				
 				centerX  = (previewW / 2) - (dw / 2);
@@ -178,8 +176,6 @@
 					wRatio   = (this.realSize.w > this.settings.size.w) ? this.settings.size.w / this.realSize.w : this.realSize.w / this.settings.size.w;
 					cropperW = this.settings.size.w * wRatio / this.cropper.z;
 					cropperH = cropperW * this.ratio;
-					
-					console.log(cropperW, cropperH);
 				} else {
 					hRatio   = (this.realSize.h > this.settings.size.h) ? this.settings.size.h / this.realSize.h : this.realSize.h / this.settings.size.h;
 					cropperH = this.settings.size.h * hRatio / this.cropper.z;
@@ -230,15 +226,26 @@
 				this.setImageSize.call(this, this.fullImage, this.build);
 			},
 			
-			cropperMouseDown: function () {
-				var boundingRect = this.cropperWrapper.getBoundingClientRect();
+			cropperMouseDown: function (e) {
+				this.cropperOffset   = {
+					x: this.cropper.x,
+					y: this.cropper.y
+				};
+				this.cropperStartPos = {
+					x: e.pageX,
+					y: e.pageY
+				};
 				
-				this.cropperOffset = boundingRect;
 				this.mouseDown = true;
 			},
 			
 			cropperMouseUp: function () {
 				this.mouseDown = false;
+				
+				this.cropperStartPos = {
+					x: 0,
+					y: 0
+				};
 			},
 			
 			cropperMouseMove: function (e) {
@@ -246,8 +253,8 @@
 					return false;
 				}
 				
-				var newX = e.pageX - this.cropperOffset.left,
-				    newY = e.pageY - this.cropperOffset.top;
+				var newX = this.cropperOffset.x + (e.pageX - this.cropperStartPos.x),
+				    newY = this.cropperOffset.y + (e.pageY - this.cropperStartPos.y);
 				    
 				this.cropper.x = newX;
 				this.cropper.y = newY;
