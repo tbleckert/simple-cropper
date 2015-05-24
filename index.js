@@ -176,8 +176,8 @@
 				cropperStyle = [
 					'position: absolute',
 					'z-index: 2',
-					'width: ' + this.cropper.w + 'px',
-					'height: ' + this.cropper.h + 'px',
+					'width: ' + (this.cropper.w / this.cropper.z) + 'px',
+					'height: ' + (this.cropper.h / this.cropper.z) + 'px',
 					'top: ' + this.cropper.y + 'px',
 					'left: ' + this.cropper.x + 'px',
 					'cursor: move',
@@ -246,8 +246,8 @@
 				var newX = Math.max(0, this.cropperOffset.x + (e.pageX - this.cropperStartPos.x)),
 				    newY = Math.max(0, this.cropperOffset.y + (e.pageY - this.cropperStartPos.y));
 				    
-				newX = Math.min(this.visibleSize.w - this.cropper.w, newX);
-				newY = Math.min(this.visibleSize.h - this.cropper.h, newY);
+				newX = Math.min(this.visibleSize.w - (this.cropper.w / this.cropper.z), newX);
+				newY = Math.min(this.visibleSize.h - (this.cropper.h / this.cropper.z), newY);
 				    
 				this.cropper.x = newX;
 				this.cropper.y = newY;
