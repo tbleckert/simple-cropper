@@ -15,15 +15,18 @@
 		var module = function (element, options) {
 			this.settings = options;
 			this.element  = document.getElementById(element);
+			this.element.className += ' ' + this.settings.className;
 			
 			if (!this.element) {
 				throw new Error('Element could not be found');
 			}
 			
 			this.cropperWrapper = this.element.querySelector(options.cropper);
+			this.cropperWrapper.className += ' ' + this.settings.className + '__wrapper';
 			
 			if (options.preview) {
 				this.preview = this.element.querySelector(options.preview);
+				this.preview.className += ' ' + this.settings.className + '__preview';
 			}
 			
 			this.ready = false;
@@ -121,6 +124,8 @@
 				    centerX,
 				    centerY;
 				    
+				canvas.className = this.settings.className + '__canvas';
+				    
 				canvas.width  = previewW;
 				canvas.height = previewH;
 				
@@ -166,6 +171,7 @@
 				/** Create overlay */
 				overlay.style.cssText = overlayStyle.join('; ');
 				this.cropperWrapper.style.position = 'relative';
+				overlay.className = this.settings.className + '__overlay';
 				
 				while (this.cropperWrapper.hasChildNodes()) {
 				    this.cropperWrapper.removeChild(this.cropperWrapper.lastChild);
@@ -188,6 +194,7 @@
 				];
 				
 				cropper.style.cssText = cropperStyle.join('; ');
+				cropper.className = this.settings.className + '__cropper';
 				
 				/** Create cropper image */
 				cropperImage = this.image.cloneNode();
@@ -203,6 +210,7 @@
 				];
 				
 				this.cropperImage = cropperImage;
+				this.cropperImage.className = this.settings.className + '__cropper__image';
 				
 				this.cropperImage.style.cssText = cropperImageStyle.join('; ');
 				this.cropperDOM = cropper;
