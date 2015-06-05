@@ -13,12 +13,15 @@
 				padding: 0;
 			}
 			
-			html{
+			html {
 				height: 100%;
 				background: #d7381c;
 				font: 400 16px/1.5 Helvetica, Arial, sans-serif;
-				-webkit-font-smoothing: antialiased;
 				color: #fff;
+			}
+			
+			html, button {
+				-webkit-font-smoothing: antialiased;
 			}
 			
 			body {
@@ -50,15 +53,37 @@
 					float: left;
 					width: 50%;
 					opacity: 0;
+					position: relative;
+					z-index: 2;
 				}
 				
 				.demo__preview {
 					background: #eee;
+					z-index: 1;
 				}
 				
 				.demo--ready .demo__split {
 					opacity: 1;
 				}
+				
+				.demo__zoom {
+					text-align: center;
+					margin-top: 20px;
+					float: left;
+					width: 100%;
+				}
+				
+			.btn {
+				background: #fff;
+				color: #333;
+				border-radius: 20px;
+				padding: 0 12px;
+				height: 26px;
+				display: inline-block;
+				border: none;
+				font-weight: bold;
+				outline: none;
+			}
 			
 			img {
 				max-width: 100%;
@@ -98,26 +123,55 @@
 				<img src="image.jpg" alt="">
 			</div>
 			<div class="demo__preview demo__split"></div>
+			
+			<div class="demo__zoom">
+				<button type="btn" class="btn" id="zoom0">Zoom out 100%</button>
+				<button type="btn" class="btn" id="zoomOut">Zoom out</button>
+				<button type="btn" class="btn" id="zoomIn">Zoom in</button>
+				<button type="btn" class="btn" id="zoom100">Zoom in 100%</button>
+			</div>
 		</div>
 		
 		<script src="simple-cropper.js"></script>
 		<script>
-			var cropper = new SimpleCropper('cropper', {
+			var zoomIn  = document.getElementById('zoomIn'),
+			    zoomOut = document.getElementById('zoomOut'),
+			    zoom100 = document.getElementById('zoom100'),
+			    zoom0   = document.getElementById('zoom0'),
+			    cropper;
+			
+			cropper = new SimpleCropper('cropper', {
 				className: 'simple-cropper',
 				cropper: '.demo__cropper',
 				preview: '.demo__preview',
 				position: {
-					x: 0,
-					y: 0	
+					x: 50,
+					y: 50	
 				},
 				size: {
 					w: 500,
 					h: 333
 				},
-				zoom: 0.5,
+				zoom: 0.2,
 				onReady: function () {
 					this.className += ' demo--ready';
 				}
+			});
+			
+			zoomOut.addEventListener('click', function () {
+				cropper.zoomOut();
+			});
+			
+			zoomIn.addEventListener('click', function () {
+				cropper.zoomIn();
+			});
+			
+			zoom0.addEventListener('click', function () {
+				cropper.zoom(0);
+			});
+			
+			zoom100.addEventListener('click', function () {
+				cropper.zoom(1);
 			});
 		</script>
 	</body>
