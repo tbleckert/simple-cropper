@@ -52,6 +52,8 @@
 				if (tempImage.complete) {
 					this.setImageSize(tempImage, this.build);
 				}
+				
+				window.onresize = this.resize.bind(this);
 			},
 			
 			setImageSize: function (image, callback) {
@@ -72,14 +74,17 @@
 				}
 				
 				var wRatio = this.settings.size.w / image.width,
-				    hRatio = this.settings.size.h / image.height;
+				    hRatio = this.settings.size.h / image.height,
+				    x      = (this.cropper) ? this.cropper.x : this.settings.position.x,
+				    y      = (this.cropper) ? this.cropper.y : this.settings.position.y,
+				    z      = (this.cropper) ? this.cropper.z : this.settings.zoom;
 				
 				this.cropper = {
 					w: this.visibleSize.w * wRatio,
 					h: this.visibleSize.h * hRatio,
-					x: this.settings.position.x,
-					y: this.settings.position.y,
-					z: this.settings.zoom
+					x: x,
+					y: y,
+					z: z
 				};
 				
 				this.ratio = (this.settings.size.w > this.settings.size.h) ? this.settings.size.h / this.settings.size.w : this.settings.size.w / this.settings.size.h;
@@ -137,8 +142,6 @@
 				}
 				
 				this.preview.appendChild(canvas);
-				
-				window.onresize = this.resize.bind(this);
 			},
 			
 			buildCropper: function () {
