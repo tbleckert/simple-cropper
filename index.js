@@ -56,7 +56,30 @@
 					this.setImageSize(tempImage, this.build);
 				}
 				
+				this.attach();
+			},
+			
+			attach: function () {
 				window.onresize = this.resize.bind(this);
+			},
+			
+			zoomOut: function (e) {
+				this.cropper.z -= 0.01;
+				this.cropper.z = Math.max(0.1, this.cropper.z);
+				
+				this.build();				
+			},
+			
+			zoomIn: function (e) {
+				this.cropper.z += 0.01;
+				this.cropper.z = Math.min(1, this.cropper.z);
+				
+				this.build();
+			},
+			
+			zoom: function (zoom) {
+				this.cropper.z = Math.max(0.1, Math.min(1, zoom));
+				this.build();
 			},
 			
 			setImageSize: function (image, callback) {
