@@ -129,6 +129,7 @@
 				<button type="btn" class="btn" id="zoomOut">Zoom out</button>
 				<button type="btn" class="btn" id="zoomIn">Zoom in</button>
 				<button type="btn" class="btn" id="zoom100">Zoom in 100%</button>
+				<button type="btn" class="btn" id="json">Get JSON</button>
 			</div>
 		</div>
 		
@@ -138,6 +139,7 @@
 			    zoomOut = document.getElementById('zoomOut'),
 			    zoom100 = document.getElementById('zoom100'),
 			    zoom0   = document.getElementById('zoom0'),
+			    json    = document.getElementById('json'),
 			    cropper;
 			
 			cropper = new SimpleCropper('cropper', {
@@ -172,6 +174,10 @@
 			
 			zoom100.addEventListener('click', function () {
 				cropper.zoom(1);
+			});
+			
+			json.addEventListener('click', function () {
+				console.log(cropper.toJSON());
 			});
 		</script>
 	</body>
