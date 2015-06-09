@@ -232,6 +232,8 @@
 					'max-width: none'
 				];
 				
+				cropperImage.ondragstart = function() { return false; };
+				
 				this.cropperImage = cropperImage;
 				this.cropperImage.className = this.settings.className + '__cropper__image';
 				
