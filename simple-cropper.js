@@ -119,8 +119,9 @@
 			},
 			
 			build: function () {
-				this.buildPreview();
 				this.buildCropper();
+				this.buildPreview();
+				
 				
 				/** Ready */
 				if (!this.ready) {
@@ -189,7 +190,9 @@
 				    wRatio,
 				    hRatio,
 				    cropperW,
-				    cropperH;
+				    cropperH,
+				    cropperX,
+				    cropperY;
 				
 				/** Create overlay */
 				overlay.style.cssText = overlayStyle.join('; ');
@@ -204,14 +207,22 @@
 				this.cropperWrapper.appendChild(overlay);
 				
 				/** Create cropper */
+				cropperW = this.cropper.w / this.cropper.z;
+				cropperH = this.cropper.h / this.cropper.z;
+				cropperX = Math.min(this.visibleSize.w - cropperW, this.cropper.x);
+				cropperY = Math.min(this.visibleSize.h - cropperH, this.cropper.y);
+				
+				this.cropper.x = cropperX;
+				this.cropper.y = cropperY;
+				
 				cropper  = document.createElement('div');
 				cropperStyle = [
 					'position: absolute',
 					'z-index: 2',
-					'width: ' + (this.cropper.w / this.cropper.z) + 'px',
-					'height: ' + (this.cropper.h / this.cropper.z) + 'px',
-					'top: ' + this.cropper.y + 'px',
-					'left: ' + this.cropper.x + 'px',
+					'width: ' + cropperW + 'px',
+					'height: ' + cropperH + 'px',
+					'top: ' + cropperY + 'px',
+					'left: ' + cropperX + 'px',
 					'cursor: move',
 					'overflow: hidden'
 				];
