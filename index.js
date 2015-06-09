@@ -305,6 +305,31 @@
 				this.cropperImage.style.top  = -newY + 'px';
 				
 				this.buildPreview();
+			},
+			
+			toJSON: function () {
+				var previewW = this.visibleSize.w,
+				    previewH = this.visibleSize.h,
+				    wRatio   = (previewW > this.settings.size.w) ? this.settings.size.w / previewW : previewW / this.settings.size.w,
+				    hRatio   = (previewH > this.settings.size.h) ? this.settings.size.h / previewH : previewH / this.settings.size.h,
+				    sw,
+				    sh;
+				
+				if (this.settings.size.w > this.settings.size.h) {
+					sw    = Math.min(this.realSize.w - this.cropper.x, this.settings.size.w / this.cropper.z);
+					sh    = sw * this.ratio;
+					dw    = this.settings.size.w * wRatio;
+					dh    = dw * this.ratio;
+				}
+				
+				var json = {
+					x: this.cropper.x / previewW * this.realSize.w,
+					y: this.cropper.y / previewH * this.realSize.h,
+					w: sw,
+					h: sh
+				};
+				
+				return json;
 			}
 			
 		};
