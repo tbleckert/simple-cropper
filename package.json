@@ -1,0 +1,25 @@
+{
+  "name": "simple-cropper",
+  "version": "0.0.1",
+  "description": "A simple, responsive image cropper that works",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://tbleckert@github.com/tbleckert/simple-cropper.git"
+  },
+  "keywords": [
+    "javascript",
+    "canvas",
+    "cropper",
+    "image"
+  ],
+  "author": "Tobias Bleckert <hola@tobiasbleckert.se>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tbleckert/simple-cropper/issues"
+  },
+  "homepage": "https://github.com/tbleckert/simple-cropper#readme"
+}
