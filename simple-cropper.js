@@ -44,7 +44,9 @@
 					throw new Error('No image found');
 				}
 				
-				this.image = image;
+				this.image   = image;
+				this.cropper = null;
+				this.ready   = false;
 				
 				src = image.src;
 				tempImage = new Image();
@@ -64,21 +66,24 @@
 			},
 			
 			zoomOut: function (e) {
-				this.cropper.z -= 0.01;
-				this.cropper.z = Math.max(0.1, this.cropper.z);
+				this.lastZoom  = this.cropper.z;
+				this.cropper.z -= this.settings.steps;
+				this.cropper.z = Math.max(this.cropper.minZoom, this.cropper.z);
 				
 				this.build();				
 			},
 			
 			zoomIn: function (e) {
-				this.cropper.z += 0.01;
+				this.lastZoom  = this.cropper.z;
+				this.cropper.z += this.settings.steps;
 				this.cropper.z = Math.min(1, this.cropper.z);
 				
 				this.build();
 			},
 			
 			zoom: function (zoom) {
-				this.cropper.z = Math.max(0.1, Math.min(1, zoom));
+				this.lastZoom  = this.cropper.z;
+				this.cropper.z = Math.max(this.cropper.minZoom, Math.min(1, zoom));
 				this.build();
 			},
 			
@@ -99,11 +104,14 @@
 					throw new Error('The cropping area can\'t be bigger than the image.');
 				}
 				
-				var wRatio = this.settings.size.w / image.width,
-				    hRatio = this.settings.size.h / image.height,
-				    x      = (this.cropper) ? this.cropper.x : this.settings.position.x,
-				    y      = (this.cropper) ? this.cropper.y : this.settings.position.y,
-				    z      = (this.cropper) ? this.cropper.z : this.settings.zoom;
+				var wRatio  = this.settings.size.w / image.width,
+				    hRatio  = this.settings.size.h / image.height,
+				    x       = (this.cropper) ? this.cropper.x : this.settings.position.x,
+				    y       = (this.cropper) ? this.cropper.y : this.settings.position.y,
+				    z       = (this.cropper) ? this.cropper.z : this.settings.zoom,
+				    minZoom;
+				    
+				this.ratio = (this.settings.size.w > this.settings.size.h) ? this.settings.size.h / this.settings.size.w : this.settings.size.w / this.settings.size.h;
 				
 				this.cropper = {
 					w: this.visibleSize.w * wRatio,
@@ -113,7 +121,21 @@
 					z: z
 				};
 				
-				this.ratio = (this.settings.size.w > this.settings.size.h) ? this.settings.size.h / this.settings.size.w : this.settings.size.w / this.settings.size.h;
+				if (this.visibleSize.w > this.visibleSize.h) {
+					minZoom = this.settings.size.w / this.realSize.w;
+					
+					if ((this.cropper.h / minZoom) > this.visibleSize.h) {
+						minZoom = this.settings.size.h / this.realSize.h;
+					}
+				} else {
+					minZoom = this.settings.size.h / this.realSize.h;
+					
+					if ((this.cropper.w / minZoom) > this.visibleSize.w) {
+						minZoom = this.settings.size.w / this.realSize.w;
+					}
+				}
+				
+				this.cropper.minZoom = minZoom;
 				
 				callback.call(this);
 			},
@@ -122,11 +144,12 @@
 				this.buildCropper();
 				this.buildPreview();
 				
-				
 				/** Ready */
 				if (!this.ready) {
 					this.ready = true;
-					this.settings.onReady.call(this.element);
+					this.settings.onReady.call(this, this.element);
+				} else {
+					this.settings.onUpdate.call(this, this.element);
 				}
 			},
 			
@@ -209,6 +232,14 @@
 				/** Create cropper */
 				cropperW = this.cropper.w / this.cropper.z;
 				cropperH = this.cropper.h / this.cropper.z;
+				
+				if (cropperW > this.visibleSize.w || cropperH > this.visibleSize.h) {
+					this.cropper.z = (this.lastZoom) ? this.lastZoom : 1;
+					
+					cropperW = this.cropper.w / this.cropper.z;
+					cropperH = this.cropper.h / this.cropper.z;
+				}
+				
 				cropperX = Math.min(this.visibleSize.w - cropperW, this.cropper.x);
 				cropperY = Math.min(this.visibleSize.h - cropperH, this.cropper.y);
 				

@@ -49,6 +49,10 @@
 				padding: 10px;
 			}
 			
+				.demo__wrapper {
+					overflow: hidden;
+				}
+			
 				.demo__split {
 					float: left;
 					width: 50%;
@@ -69,20 +73,39 @@
 				.demo__zoom {
 					text-align: center;
 					margin-top: 20px;
-					float: left;
-					width: 100%;
+					margin: 20px auto;
+					width: 50%;
+					background: #fff;
+					color: #333;
+					border-radius: 20px;
+					padding: 0 12px;
+					height: 26px;
 				}
 				
-			.btn {
-				background: #fff;
+			.btn, .demo__zoom__current {
 				color: #333;
-				border-radius: 20px;
+				background: none;
 				padding: 0 12px;
 				height: 26px;
 				display: inline-block;
 				border: none;
+				border-left: 1px solid #ccc;
 				font-weight: bold;
 				outline: none;
+				cursor: pointer;
+				float: left;
+				width: 20%;
+				line-height: 26px;
+				font-size: 12px;
+			}
+			
+				.btn:first-child {
+					border-left: none;
+				}
+				
+			.demo__zoom__current {
+				cursor: default;
+				font-weight: normal;
 			}
 			
 			img {
@@ -119,17 +142,19 @@
 		<div class="demo" id="cropper">
 			<h1>Simple cropper</h1>
 			
-			<div class="demo__cropper demo__split">
-				<img src="image.jpg" alt="">
+			<div class="demo__wrapper">
+				<div class="demo__cropper demo__split">
+					<img src="image.jpg" alt="">
+				</div>
+				<div class="demo__preview demo__split"></div>
 			</div>
-			<div class="demo__preview demo__split"></div>
 			
 			<div class="demo__zoom">
-				<button type="btn" class="btn" id="zoom0">Zoom out 100%</button>
+				<button type="btn" class="btn" id="zoom0">Zoom max</button>
 				<button type="btn" class="btn" id="zoomOut">Zoom out</button>
+				<span class="demo__zoom__current" id="currentZoom">100%</span>
 				<button type="btn" class="btn" id="zoomIn">Zoom in</button>
-				<button type="btn" class="btn" id="zoom100">Zoom in 100%</button>
-				<button type="btn" class="btn" id="json">Get JSON</button>
+				<button type="btn" class="btn" id="zoom100">No Zoom</button>
 			</div>
 		</div>
 		
@@ -140,6 +165,7 @@
 			    zoom100 = document.getElementById('zoom100'),
 			    zoom0   = document.getElementById('zoom0'),
 			    json    = document.getElementById('json'),
+			    currentZoom = document.getElementById('currentZoom'),
 			    cropper;
 			
 			cropper = new SimpleCropper('cropper', {
@@ -155,8 +181,13 @@
 					h: 333
 				},
 				zoom: 0.2,
-				onReady: function () {
-					this.className += ' demo--ready';
+				steps: 0.05,
+				onReady: function (element) {
+					element.className += ' demo--ready';
+					currentZoom.innerHTML = Math.round(this.cropper.z * 100) + '%';
+				},
+				onUpdate: function () {
+					currentZoom.innerHTML = Math.round(this.cropper.z * 100) + '%';
 				}
 			});
 			
@@ -174,10 +205,6 @@
 			
 			zoom100.addEventListener('click', function () {
 				cropper.zoom(1);
-			});
-			
-			json.addEventListener('click', function () {
-				console.log(cropper.toJSON());
 			});
 		</script>
 	</body>
