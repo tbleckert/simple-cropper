@@ -70,7 +70,7 @@
 				this.cropper.z -= this.settings.steps;
 				this.cropper.z = Math.max(this.cropper.minZoom, this.cropper.z);
 				
-				this.build();				
+				this.update();				
 			},
 			
 			zoomIn: function (e) {
@@ -78,13 +78,13 @@
 				this.cropper.z += this.settings.steps;
 				this.cropper.z = Math.min(1, this.cropper.z);
 				
-				this.build();
+				this.update();
 			},
 			
 			zoom: function (zoom) {
 				this.lastZoom  = this.cropper.z;
 				this.cropper.z = Math.max(this.cropper.minZoom, Math.min(1, zoom));
-				this.build();
+				this.update();
 			},
 			
 			setImageSize: function (image, callback) {
@@ -153,13 +153,14 @@
 				}
 			},
 			
-			buildPreview: function () {
-				if (!this.preview) {
-					return false;
-				}
-				
-				var canvas  = document.createElement('canvas'),
-				    context = canvas.getContext('2d'),
+			update: function () {
+				this.updatePreview();
+				this.updateCropper();
+			},
+			
+			buildCanvas: function () {
+				var canvas   = document.createElement('canvas'),
+				    context  = canvas.getContext('2d'),
 				    previewW = this.visibleSize.w,
 				    previewH = this.visibleSize.h,
 				    wRatio   = (previewW > this.settings.size.w) ? this.settings.size.w / previewW : previewW / this.settings.size.w,
@@ -188,12 +189,33 @@
 				    
 				context.drawImage(this.fullImage, this.cropper.x / previewW * this.realSize.w, this.cropper.y / previewH * this.realSize.h, sw, sh, centerX, centerY, dw, dh);
 				
+				return [canvas, context];
+			},
+			
+			buildPreview: function () {
+				if (!this.preview) {
+					return false;
+				}
+				
+				var build = this.buildCanvas();
+				
 				/** Empty preview */
 				while (this.preview.hasChildNodes()) {
 				    this.preview.removeChild(this.preview.lastChild);
 				}
 				
-				this.preview.appendChild(canvas);
+				this.preview.appendChild(build[0]);
+				
+				/** Export */
+				this.canvas  = build[0];
+				this.context = build[1];
+			},
+			
+			updatePreview: function () {
+				var build = this.buildCanvas();
+				
+				/** Update canvas */
+				this.context.drawImage(build[0], 0, 0);
 			},
 			
 			buildCropper: function () {
@@ -286,8 +308,49 @@
 				this.cropperWrapper.appendChild(this.cropperDOM);
 				
 				this.cropperDOM.addEventListener('mousedown', this.cropperMouseDown.bind(this));
-				document.addEventListener('mouseup', this.cropperMouseUp.bind(this));
-				document.addEventListener('mousemove', this.cropperMouseMove.bind(this));
+				
+				if (!this.ready) {
+					document.addEventListener('mouseup', this.cropperMouseUp.bind(this));
+					document.addEventListener('mousemove', this.cropperMouseMove.bind(this));
+				}
+			},
+			
+			updateCropper: function () {
+				var cropperStyle,
+				    cropper,
+				    cropperImage,
+				    cropperImageStyle,
+				    wRatio,
+				    hRatio,
+				    cropperW,
+				    cropperH,
+				    cropperX,
+				    cropperY;
+				
+				/** Create cropper */
+				cropperW = this.cropper.w / this.cropper.z;
+				cropperH = this.cropper.h / this.cropper.z;
+				
+				if (cropperW > this.visibleSize.w || cropperH > this.visibleSize.h) {
+					this.cropper.z = (this.lastZoom) ? this.lastZoom : 1;
+					
+					cropperW = this.cropper.w / this.cropper.z;
+					cropperH = this.cropper.h / this.cropper.z;
+				}
+				
+				cropperX = Math.min(this.visibleSize.w - cropperW, this.cropper.x);
+				cropperY = Math.min(this.visibleSize.h - cropperH, this.cropper.y);
+				
+				this.cropper.x = cropperX;
+				this.cropper.y = cropperY;
+				
+				this.cropperDOM.style.width  = cropperW + 'px';
+				this.cropperDOM.style.height = cropperH + 'px';
+				this.cropperDOM.style.top    = cropperY + 'px';
+				this.cropperDOM.style.left   = cropperX + 'px';
+				
+				this.cropperImage.style.top    = '-' + this.cropper.y + 'px';
+				this.cropperImage.style.left   = '-' + this.cropper.x + 'px';
 			},
 			
 			resize: function () {
@@ -335,7 +398,7 @@
 				this.cropperImage.style.left = -newX + 'px';
 				this.cropperImage.style.top  = -newY + 'px';
 				
-				this.buildPreview();
+				this.updatePreview();
 			},
 			
 			toJSON: function () {
