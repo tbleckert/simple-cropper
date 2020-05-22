@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-	
+
 	<head>
 		<title>Simple Cropper</title>
 		<link href='http://fonts.googleapis.com/css?family=Pacifico&text=Simple%20Cropper' rel='stylesheet' type='text/css'>
@@ -12,30 +12,30 @@
 				margin: 0;
 				padding: 0;
 			}
-			
+
 			html {
 				height: 100%;
 				background: #d7381c;
 				font: 400 16px/1.5 Helvetica, Arial, sans-serif;
 				color: #fff;
 			}
-			
+
 			html, button {
 				-webkit-font-smoothing: antialiased;
 			}
-			
+
 			body {
 				min-height: 100%;
 				position: relative;
 				text-rendering: optimizeLegibility;
 			}
-			
+
 			h1 {
 				font-family: Pacifico, cursive;
 				text-align: center;
 				margin-bottom: 80px;
 			}
-			
+
 			.demo {
 				width: 100%;
 				max-width: 1100px;
@@ -48,40 +48,40 @@
 				background: url('loading.gif') no-repeat center center;
 				padding: 10px;
 			}
-			
-				.demo__wrapper {
-					overflow: hidden;
-				}
-			
-				.demo__split {
-					float: left;
-					width: 50%;
-					opacity: 0;
-					position: relative;
-					z-index: 2;
-				}
-				
-				.demo__preview {
-					background: #eee;
-					z-index: 1;
-				}
-				
-				.demo--ready .demo__split {
-					opacity: 1;
-				}
-				
-				.demo__zoom {
-					text-align: center;
-					margin-top: 20px;
-					margin: 20px auto;
-					width: 50%;
-					background: #fff;
-					color: #333;
-					border-radius: 20px;
-					padding: 0 12px;
-					height: 26px;
-				}
-				
+
+			.demo__wrapper {
+				overflow: hidden;
+			}
+
+			.demo__split {
+				float: left;
+				width: 50%;
+				opacity: 0;
+				position: relative;
+				z-index: 2;
+			}
+
+			.demo__preview {
+				background: #eee;
+				z-index: 1;
+			}
+
+			.demo--ready .demo__split {
+				opacity: 1;
+			}
+
+			.demo__zoom {
+				text-align: center;
+				margin-top: 20px;
+				margin: 20px auto;
+				width: 50%;
+				background: #fff;
+				color: #333;
+				border-radius: 20px;
+				padding: 0 12px;
+				height: 26px;
+			}
+
 			.btn, .demo__zoom__current {
 				color: #333;
 				background: none;
@@ -98,30 +98,30 @@
 				line-height: 26px;
 				font-size: 12px;
 			}
-			
-				.btn:first-child {
-					border-left: none;
-				}
-				
+
+			.btn:first-child {
+				border-left: none;
+			}
+
 			.demo__zoom__current {
 				cursor: default;
 				font-weight: normal;
 			}
-			
+
 			img {
 				max-width: 100%;
 				height: auto;
 				display: block;
 			}
-			
+
 			canvas {
 				display: block;
 			}
-			
+
 			.simple-cropper__cropper {
 				box-shadow: 0 0 0 2px white;
 			}
-			
+
 			@media (max-width: 600px) {
 				.demo {
 					position: static;
@@ -129,7 +129,7 @@
 					-moz-transform: none;
 					transform: none;
 				}
-				
+
 				.demo__split {
 					float: none;
 					width: 100%;
@@ -137,18 +137,18 @@
 			}
 		</style>
 	</head>
-	
+
 	<body>
 		<div class="demo" id="cropper">
 			<h1>Simple cropper</h1>
-			
+
 			<div class="demo__wrapper">
 				<div class="demo__cropper demo__split">
-					<img src="image.jpg" alt="">
+					<img width="1400" height="933" src="https://images.unsplash.com/photo-1534531173927-aeb928d54385?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1400&q=80" alt="">
 				</div>
 				<div class="demo__preview demo__split"></div>
 			</div>
-			
+
 			<div class="demo__zoom">
 				<button type="btn" class="btn" id="zoom0">Zoom max</button>
 				<button type="btn" class="btn" id="zoomOut">Zoom out</button>
@@ -157,56 +157,8 @@
 				<button type="btn" class="btn" id="zoom100">No Zoom</button>
 			</div>
 		</div>
-		
-		<script src="simple-cropper.js"></script>
-		<script>
-			var zoomIn  = document.getElementById('zoomIn'),
-			    zoomOut = document.getElementById('zoomOut'),
-			    zoom100 = document.getElementById('zoom100'),
-			    zoom0   = document.getElementById('zoom0'),
-			    json    = document.getElementById('json'),
-			    currentZoom = document.getElementById('currentZoom'),
-			    cropper;
-			
-			cropper = new SimpleCropper('cropper', {
-				className: 'simple-cropper',
-				cropper: '.demo__cropper',
-				preview: '.demo__preview',
-				position: {
-					x: 50,
-					y: 50	
-				},
-				size: {
-					w: 500,
-					h: 333
-				},
-				zoom: 0.2,
-				steps: 0.05,
-				onReady: function (element) {
-					element.className += ' demo--ready';
-					currentZoom.innerHTML = Math.round(this.cropper.z * 100) + '%';
-				},
-				onUpdate: function () {
-					currentZoom.innerHTML = Math.round(this.cropper.z * 100) + '%';
-				}
-			});
-			
-			zoomOut.addEventListener('click', function () {
-				cropper.zoomOut();
-			});
-			
-			zoomIn.addEventListener('click', function () {
-				cropper.zoomIn();
-			});
-			
-			zoom0.addEventListener('click', function () {
-				cropper.zoom(0);
-			});
-			
-			zoom100.addEventListener('click', function () {
-				cropper.zoom(1);
-			});
-		</script>
+
+		<script src="./script.js"></script>
 	</body>
-	
+
 </html>
