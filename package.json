@@ -1,6 +1,6 @@
 {
   "name": "simple-cropper",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple, responsive image cropper that works",
   "main": "SimpleCropper.js",
   "scripts": {
